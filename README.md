@@ -35,7 +35,7 @@
 
 ### 線上使用
 
-訪問 GitHub Pages：[https://your-username.github.io/LoraResize](https://your-username.github.io/LoraResize)
+訪問 GitHub Pages：[https://greed0513.github.io/LoraResize](https://greed0513.github.io/LoraResize)
 
 ### 本地使用
 
