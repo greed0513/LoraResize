@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PNG Resize 批次處理工具</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PNG Resize 批次處理工具</h1>
+            <p class="subtitle">支援透明底PNG，自動調整為1024x1024</p>
+        </header>
+
+        <main>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <h2>拖拽圖片到這裡</h2>
+                <p>或點擊選擇檔案</p>
+                <p class="limit-info">最多支援100張PNG圖片</p>
+                <input type="file" id="fileInput" accept="image/png" multiple hidden>
+            </div>
+
+            <div class="output-folder-section">
+                <div class="folder-selector">
+                    <button id="selectFolderBtn" class="btn btn-folder">📂 選擇輸出資料夾</button>
+                    <div class="folder-info">
+                        <span id="folderPath" class="folder-path">尚未選擇資料夾</span>
+                    </div>
+                </div>
+                <div class="browser-warning" id="browserWarning" style="display: none;">
+                    ⚠️ 您的瀏覽器不支援直接存檔功能，建議使用Chrome或Edge瀏覽器
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="clearBtn" class="btn btn-secondary">清除全部</button>
+                <button id="processBtn" class="btn btn-primary">開始處理</button>
+            </div>
+
+            <div class="progress-section" id="progressSection" style="display: none;">
+                <div class="progress-info">
+                    <span id="progressText">處理中... 0/0</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <div class="file-list" id="fileList"></div>
+        </main>
+
+        <footer>
+            <div class="info-box">
+                <h3>處理規則：</h3>
+                <ul>
+                    <li>先判斷最長邊（寬或高），等比例縮放至1024px</li>
+                    <li>再將畫布擴展為1024x1024</li>
+                    <li>透明底PNG → 透明底輸出</li>
+                    <li>有底色PNG → 黑色底輸出</li>
+                    <li>保持圖像比例，不變形，不壓縮畫質</li>
+                </ul>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
