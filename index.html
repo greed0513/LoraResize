@@ -48,6 +48,20 @@
                 </div>
             </div>
 
+            <div class="completion-section" id="completionSection" style="display: none;">
+                <div class="completion-message">
+                    <div class="completion-icon">✅</div>
+                    <h3>處理完成！</h3>
+                    <p>已成功儲存 <span id="completedCount">0</span> 張圖片</p>
+                    <div class="output-folder-link">
+                        <strong>輸出位置：</strong>
+                        <span id="outputFolderName"></span>
+                    </div>
+                    <p class="folder-hint">💡 請在檔案管理器中查看您選擇的輸出資料夾</p>
+                    <button id="closeCompletionBtn" class="btn btn-secondary">關閉</button>
+                </div>
+            </div>
+
             <div class="file-list" id="fileList"></div>
         </main>
 
@@ -55,10 +69,10 @@
             <div class="info-box">
                 <h3>處理規則：</h3>
                 <ul>
-                    <li>先判斷最長邊（寬或高），等比例縮放至1024px</li>
-                    <li>再將畫布擴展為1024x1024</li>
-                    <li>透明底PNG → 透明底輸出</li>
-                    <li>有底色PNG → 黑色底輸出</li>
+                    <li>尺寸 ≤ 1024x1024 的圖片：保持原尺寸，用透明底擴展畫布至1024x1024</li>
+                    <li>尺寸 > 1024 的圖片：等比例縮放最長邊至1024px，再擴展畫布至1024x1024</li>
+                    <li>小圖不縮放模式 → 透明底輸出</li>
+                    <li>大圖縮放模式：透明底PNG → 透明底輸出，有底色PNG → 黑色底輸出</li>
                     <li>保持圖像比例，不變形，不壓縮畫質</li>
                 </ul>
             </div>

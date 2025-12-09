@@ -16,6 +16,10 @@ const progressText = document.getElementById('progressText');
 const selectFolderBtn = document.getElementById('selectFolderBtn');
 const folderPath = document.getElementById('folderPath');
 const browserWarning = document.getElementById('browserWarning');
+const completionSection = document.getElementById('completionSection');
+const completedCount = document.getElementById('completedCount');
+const outputFolderName = document.getElementById('outputFolderName');
+const closeCompletionBtn = document.getElementById('closeCompletionBtn');
 
 // 初始化事件監聽器
 function init() {
@@ -33,6 +37,7 @@ function init() {
     clearBtn.addEventListener('click', clearAllFiles);
     processBtn.addEventListener('click', startProcessing);
     selectFolderBtn.addEventListener('click', selectOutputFolder);
+    closeCompletionBtn.addEventListener('click', closeCompletionMessage);
 
     updateUI();
 }
@@ -244,13 +249,21 @@ async function startProcessing() {
     isProcessing = false;
     updateUI();
 
-    // 顯示完成訊息
-    alert(`處理完成！已儲存 ${processedFiles} 張圖片到資料夾：${outputDirectoryHandle.name}`);
-
+    // 隱藏進度條
     setTimeout(() => {
         progressSection.style.display = 'none';
         progressFill.style.width = '0%';
-    }, 2000);
+    }, 500);
+
+    // 顯示完成訊息
+    completedCount.textContent = processedFiles;
+    outputFolderName.textContent = outputDirectoryHandle.name;
+    completionSection.style.display = 'block';
+}
+
+// 關閉完成訊息
+function closeCompletionMessage() {
+    completionSection.style.display = 'none';
 }
 
 // 更新進度
@@ -303,22 +316,36 @@ function resizeImage(img, originalName) {
     const originalWidth = img.width;
     const originalHeight = img.height;
 
-    // 判斷最長邊
-    const maxDimension = Math.max(originalWidth, originalHeight);
-    const scale = 1024 / maxDimension;
+    let scaledWidth, scaledHeight;
+    let needsScaling = false;
 
-    // 計算縮放後的尺寸
-    const scaledWidth = Math.round(originalWidth * scale);
-    const scaledHeight = Math.round(originalHeight * scale);
+    // 判斷是否需要縮放
+    if (originalWidth <= 1024 && originalHeight <= 1024) {
+        // 圖片尺寸小於或等於1024x1024，不縮放，保持原尺寸
+        scaledWidth = originalWidth;
+        scaledHeight = originalHeight;
+        needsScaling = false;
+    } else {
+        // 圖片有任一邊大於1024，需要等比例縮放
+        const maxDimension = Math.max(originalWidth, originalHeight);
+        const scale = 1024 / maxDimension;
+        scaledWidth = Math.round(originalWidth * scale);
+        scaledHeight = Math.round(originalHeight * scale);
+        needsScaling = true;
+    }
 
-    // 創建臨時canvas進行縮放
+    // 創建臨時canvas
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = scaledWidth;
     tempCanvas.height = scaledHeight;
     const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
 
-    // 繪製縮放後的圖片
-    tempCtx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
+    // 繪製圖片（縮放或原尺寸）
+    if (needsScaling) {
+        tempCtx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
+    } else {
+        tempCtx.drawImage(img, 0, 0);
+    }
 
     // 檢測是否有透明底
     const hasTransparency = checkTransparency(tempCtx, scaledWidth, scaledHeight);
@@ -329,17 +356,18 @@ function resizeImage(img, originalName) {
     finalCanvas.height = 1024;
     const finalCtx = finalCanvas.getContext('2d');
 
-    // 如果沒有透明底，填充黑色背景
-    if (!hasTransparency) {
+    // 如果沒有透明底，填充黑色背景；如果是小圖不縮放的情況，使用透明底
+    if (!hasTransparency && needsScaling) {
         finalCtx.fillStyle = '#000000';
         finalCtx.fillRect(0, 0, 1024, 1024);
     }
+    // 小圖不縮放的情況，默認使用透明底（不填充）
 
     // 計算居中位置
     const offsetX = Math.floor((1024 - scaledWidth) / 2);
     const offsetY = Math.floor((1024 - scaledHeight) / 2);
 
-    // 繪製縮放後的圖片到中心
+    // 繪製圖片到中心
     finalCtx.drawImage(tempCanvas, offsetX, offsetY);
 
     // 生成新檔名
